@@ -1,0 +1,76 @@
+<script>
+class PopUp extends HTMLElement {
+  constructor() {
+    super();
+    if (!this.shadowRoot) {
+        const target = this.getAttribute('target');
+        const popupw = this.getAttribute('popupwidth') || "400px";
+        const popupbg = this.getAttribute('popupbg') || "white";
+        const mainbg = this.getAttribute('mainbg') || "white";
+        const shadowRoot = this.attachShadow({ mode: 'open' });
+        const template = document.createElement('template');
+        template.innerHTML = `
+        <style>
+        .background {
+            background-color: rgb(0 0 0 /0.7);
+            width: 100vw;
+            height: 100vh;
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            overflow-y: hidden;
+            border-radius: 3px;
+            transition: opacity 0.5s;
+        }
+        .pop_up {
+            background-color: ${popupbg};
+            width: ${popupw};
+            max-width: 100%;
+            position: absolute;
+            left: 50vw;
+            top: 10vh;
+            margin-left: -200px;
+            text-align: center;
+        }
+        .pop_up main {
+            background-color: ${mainbg}; 
+            padding: 1em;
+        }
+        </style>
+        <div id="${target}" class="background">
+        <div class="pop_up">
+            <header>
+                <slot name="header"></slot>
+            </header>
+            <main>
+                <slot name="main"></slot>
+            </main>
+        </div>
+        </div>
+        <footer>
+        `;
+        shadowRoot.appendChild(template.content.cloneNode(true));
+        const modal = shadowRoot.getElementById(target);
+        var btn = document.getElementById(target);
+        btn.addEventListener('click',(ev) => {
+            ev.stopPropagation();
+            modal.firstChild.className="drift-zoom-pane drift-opening";
+            modal.style.display = "block";
+            modal.style.opacity="1";
+            window.addEventListener('click',closeHandler);
+        });
+        function closeHandler(ev) {
+            if(ev.target.getAttribute("target") == target) {
+                window.removeEventListener('click',closeHandler);
+                modal.style.opacity = "0";
+                modal.style.display="none";
+            }
+        }
+    }
+  }
+}
+
+customElements.define('pop-up', PopUp); 
+</script>
