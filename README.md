@@ -30,3 +30,5 @@ There is two content slots: header and main, fill with the desired content. With
     </div>
 </pop-up>
 ```
+## Considerations
+This component is not done with the html <dialog> element, which would be perfect, as the compability is not there yet for all webbrowsers used in the wild.
